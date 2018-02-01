@@ -148,7 +148,7 @@ PROCEDURE p-DealHand:
 
 END PROCEDURE.
 
-PROCEDURE p-DiscardAndDraw:
+PROCEDURE p-Discard:
     DEFINE INPUT PARAMETER ipchPlayer AS CHARACTER NO-UNDO.
     DEFINE INPUT PARAMETER ipinCard   AS INTEGER   NO-UNDO.
     
@@ -168,20 +168,56 @@ PROCEDURE p-DiscardAndDraw:
            tt-shuffled-deck.discarded = TRUE
            tt-player.player-hand[ipinCard] = "".
            
-    RELEASE tt-shuffled-deck.           
-           
-    FIND FIRST tt-shuffled-deck 
-         WHERE tt-shuffled-deck.in-hand   = FALSE 
-           AND tt-shuffled-deck.discarded = FALSE NO-ERROR.
-    IF NOT AVAIL tt-shuffled-deck THEN
-    DO:
-        MESSAGE "No more cards to be dealt!" VIEW-AS ALERT-BOX.
+    RELEASE tt-shuffled-deck.
+    RELEASE tt-player.
+    
+END PROCEDURE.    
+
+PROCEDURE p-DrawCard:
+    DEFINE INPUT PARAMETER ipchPlayer AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER ipchPile   AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER ipinCard   AS INTEGER   NO-UNDO.
+    
+    FIND tt-player WHERE tt-player.player-name = ipchPlayer.
+    IF NOT AVAILABLE tt-player THEN DO:
+        MESSAGE SUBSTITUTE("Player &1 not found!",ipchPlayer) VIEW-AS ALERT-BOX.
         RETURN.
+    END.  
+    
+    IF ipchPile = "Deck" THEN
+    DO:
+        FIND FIRST tt-shuffled-deck 
+             WHERE tt-shuffled-deck.in-hand   = FALSE 
+               AND tt-shuffled-deck.discarded = FALSE 
+               AND tt-shuffled-deck.in-stack  = FALSE NO-ERROR.
+        IF NOT AVAIL tt-shuffled-deck THEN
+        DO:
+            MESSAGE "No more cards in deck pile!" VIEW-AS ALERT-BOX.
+            RETURN.
+        END.
+        ASSIGN tt-player.player-hand[ipinCard] = tt-shuffled-deck.card-title
+                    tt-shuffled-deck.in-hand        = TRUE.
     END.
-    ELSE ASSIGN tt-player.player-hand[ipinCard] = tt-shuffled-deck.card-title
-                tt-shuffled-deck.in-hand        = TRUE.                               
-          
-END PROCEDURE.  
+    ELSE IF ipchPile = "Discard" THEN
+    DO:
+        FIND FIRST tt-shuffled-deck 
+             WHERE tt-shuffled-deck.in-hand   = FALSE 
+               AND tt-shuffled-deck.discarded = TRUE 
+               AND tt-shuffled-deck.in-stack  = FALSE NO-ERROR.
+        IF NOT AVAIL tt-shuffled-deck THEN
+        DO:
+            MESSAGE "No more cards in discard pile!" VIEW-AS ALERT-BOX.
+            RETURN.
+        END.
+        ASSIGN tt-player.player-hand[ipinCard] = tt-shuffled-deck.card-title
+                    tt-shuffled-deck.in-hand        = TRUE.
+    END.    
+    ELSE MESSAGE "Invalid selection for p-DrawCard" VIEW-AS ALERT-BOX.                            
+
+    RELEASE tt-shuffled-deck.
+    RELEASE tt-player.    
+    
+END.    
 
 PROCEDURE p-PickupAndLayDown:
     DEFINE INPUT PARAMETER ipchPlayer AS CHARACTER NO-UNDO.
