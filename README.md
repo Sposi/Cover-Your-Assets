@@ -3,7 +3,7 @@
 
 ##### Game Actions:
 - [x] Discard and draw                                  
-- [ ] Pick-up card from discard pile and make stack     (IN PROGRESS)
+- [x] Pick-up card from discard pile and make stack
 - [ ] Match 2 cards in hand and make stack
 - [ ] Challenge Player
   - challenge and response cadence
@@ -15,3 +15,4 @@ Then, add functionality for multiple players to connect.  I'm thinking of creati
 
 ##### Wishlist:
 - After 6 players, add additional deck(s).
+- Time limit before turn skipped?
