@@ -5,6 +5,7 @@ DEFINE VARIABLE loGameLoop       AS LOGICAL NO-UNDO INITIAL TRUE.
 DEFINE VARIABLE loDiscardAndDraw AS LOGICAL NO-UNDO.
 DEFINE VARIABLE inDiscardCard    AS INTEGER NO-UNDO.
 DEFINE VARIABLE loPickUpLayDown  AS LOGICAL NO-UNDO.
+DEFINE VARIABLE inMatchCard      AS INTEGER NO-UNDO.
 
 {cya-include.i}
 
@@ -49,9 +50,15 @@ DO WHILE loGameLoop:
         UPDATE loDiscardAndDraw LABEL "Discard and Draw?" WITH FRAME frGamePrompts.
         DO WHILE loDiscardAndDraw:
             
-            UPDATE inDiscardCard    LABEL "Which card to discard? (1-4)".
-            RUN p-DiscardAndDraw(INPUT tt-player.player-name,
-                                INPUT inDiscardCard).
+            UPDATE inDiscardCard    LABEL "Which card to discard? (1-4)".            
+            
+            RUN p-Discard(INPUT tt-player.player-name,
+                          INPUT inDiscardCard).                        
+                          
+            RUN p-DrawCard(INPUT tt-player.player-name,
+                           INPUT "Deck",
+                           INPUT inDiscardCard).                          
+            
             DISPLAY tt-player.player-hand WITH FRAME frPlayerCards.
             UPDATE loDiscardAndDraw LABEL "Discard and Draw?" WITH FRAME frGamePrompts.                                                                        
         END.       
@@ -61,7 +68,9 @@ DO WHILE loGameLoop:
         UPDATE loPickUpLayDown LABEL "Pickup from discard?" WITH FRAME frGamePrompts.
         DO WHILE loPickUpLayDown:
             
-            RUN p-PickupAndLayDown(INPUT tt-player.player-name).
+            UPDATE inMatchCard     LABEL "Which card to match?".
+            RUN p-PickupAndLayDown(INPUT tt-player.player-name,
+                                   INPUT inMatchCard).
             DISPLAY tt-player.player-hand WITH FRAME frPlayerCards.
             FOR EACH tt-stack WHERE tt-stack.player-id = tt-player.player-name:
                 DISPLAY tt-stack.stack-num
