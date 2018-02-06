@@ -270,6 +270,35 @@ PROCEDURE p-PickupAndLayDown:
 
 END PROCEDURE.
 
+PROCEDURE p-MatchCards:
+    /* Checks matches in hand and returns true if so */
+    DEFINE INPUT  PARAMETER ipchPlayer AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER iploMatch  AS LOGICAL   NO-UNDO.
+    
+    DEFINE VARIABLE icx AS INTEGER NO-UNDO.
+    DEFINE VARIABLE idx AS INTEGER NO-UNDO.
+    DEFINE VARIABLE chCard AS CHARACTER NO-UNDO.
+    
+    FIND tt-player WHERE tt-player.player-name = ipchPlayer NO-ERROR.
+    IF NOT AVAILABLE tt-player THEN DO:
+        MESSAGE SUBSTITUTE("Player &1 not found!",ipchPlayer) VIEW-AS ALERT-BOX.            
+        RETURN.
+    END.
+    
+    DO icx = 1 TO 4:
+        ASSIGN chCard = tt-player.player-hand[icx].
+        DO idx = 1 TO 4:
+            IF idx = icx THEN NEXT.
+            IF chCard = tt-player.player-hand[idx] THEN
+            DO:
+                ASSIGN iploMatch = TRUE.
+                RETURN.
+            END.                
+        END.            
+    END.        
+    
+ END PROCEDURE.    
+
 
 
 /****************************************************************
