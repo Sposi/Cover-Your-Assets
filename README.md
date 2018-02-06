@@ -4,7 +4,8 @@
 ##### Game Actions:
 - [x] Discard and draw                                  
 - [x] Pick-up card from discard pile and make stack
-- [ ] Match 2 cards in hand and make stack
+- [x] Match 2 cards in hand and make stack
+- [ ] NEW! Work on GUI.  Will be hard to design/test Challenge sequence without proper GUI.
 - [ ] Challenge Player
   - challenge and response cadence
   - draw *n* cards after challenge
