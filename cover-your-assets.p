@@ -6,6 +6,8 @@ DEFINE VARIABLE loDiscardAndDraw AS LOGICAL NO-UNDO.
 DEFINE VARIABLE inDiscardCard    AS INTEGER NO-UNDO.
 DEFINE VARIABLE loPickUpLayDown  AS LOGICAL NO-UNDO.
 DEFINE VARIABLE inMatchCard      AS INTEGER NO-UNDO.
+DEFINE VARIABLE loMatch          AS LOGICAL NO-UNDO.
+DEFINE VARIABLE loCheckMatch     AS LOGICAL NO-UNDO.
 
 {cya-include.i}
 
@@ -44,7 +46,7 @@ DO WHILE loGameLoop:
     DO itx = 1 TO inNumPlayers:
         FIND tt-player WHERE tt-player.player-id = itx.
         DISPLAY tt-player.player-name
-                tt-player.player-hand WITH FRAME frPlayerCards.
+                tt-player.player-hand WITH FRAME frPlayerCards.       
         
         /* For action Discard and Draw */
         UPDATE loDiscardAndDraw LABEL "Discard and Draw?" WITH FRAME frGamePrompts.
@@ -77,7 +79,23 @@ DO WHILE loGameLoop:
                         tt-stack.stack-contents.
             END.                
             UPDATE loPickUpLayDown LABEL "Pickup from discard?" WITH FRAME frGamePrompts.        
+        END.   
+        
+        /* For action check matches in hand */
+        UPDATE loCheckMatch LABEL "Check for matches in hand?" WITH FRAM frGamePrompts.
+        DO WHILE loCheckMatch:
+            
+            RUN p-MatchCards(INPUT tt-player.player-name,
+                         OUTPUT loMatch). 
+            IF loMatch THEN  MESSAGE "You Matched!" VIEW-AS ALERT-BOX.
+            ELSE MESSAGE "No Match!" VIEW-AS ALERT-BOX.
+            
+            /* Get out of the loop... */
+            ASSIGN loCheckMatch = FALSE.
+            
         END.            
+        
+                 
               
     END.        
     
